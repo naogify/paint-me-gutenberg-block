@@ -4,9 +4,13 @@
 
 import Canvas from "./components/Canvas";
 
+const {__} = wp.i18n;
+
 const { registerBlockType } = wp.blocks;
 
-const { RichText, InspectorControls, ColorPalette } = wp.editor;
+const {Button} = wp.components;
+
+const {RichText, InspectorControls, ColorPalette, MediaUpload} = wp.editor;
 
 registerBlockType("guty2/paint-me", {
     title: "Paint me",
@@ -16,7 +20,7 @@ registerBlockType("guty2/paint-me", {
     attributes: {
         backgroundColor: {
             type: String,
-            default: "blue"
+            default: "transparent"
         },
         linesList: {
             type: Array,
@@ -29,12 +33,16 @@ registerBlockType("guty2/paint-me", {
         lineWidth: {
             type: Number,
             default: 1
+        },
+        insertImage: {
+            type: 'string',
+            default: null, // no image by default!
         }
     },
 
     edit(props) {
         const { className, setAttributes } = props;
-        const { backgroundColor, linesList, lineColor, lineWidth } = props.attributes;
+        const {backgroundColor, linesList, lineColor, lineWidth, insertImage} = props.attributes;
 
         function clearLines() {
             setAttributes({ linesList: []});
@@ -57,7 +65,7 @@ registerBlockType("guty2/paint-me", {
                 lineColor: change
             })
         }
-        
+
         function onLineWidthChange(event) {
             setAttributes({
                 lineWidth: event.target.value
@@ -103,8 +111,27 @@ registerBlockType("guty2/paint-me", {
                 </div>
             </InspectorControls>,
             <div className={className} data-react-props={JSON.stringify(data)}>
+                <div className={'vk_flow_frame_image'}>
+                    <MediaUpload
+                        onSelect={(value) => setAttributes({insertImage: value.url})}
+                        type="image"
+                        className={'vk_flow_frame_image'}
+                        value={insertImage}
+                        render={({open}) => (
+                            <Button
+                                onClick={open}
+                                className={insertImage ? 'image-button' : 'button button-large'}
+                            >
+                                {!insertImage ? __('Select image', 'vk-blocks') :
+                                    <img className={'icon-image'} src={insertImage}
+                                         alt={__('Upload image', 'vk-blocks')}/>}
+                            </Button>
+                        )}
+                    />
+                </div>
                 <Canvas
-                    backgroundColor={backgroundColor}
+                    backgroundColor={'transparent'}
+                    // backgroundColor={backgroundColor}
                     lineColor={lineColor}
                     lineWidth={lineWidth}
                     onLineAdded={onLineAdded}

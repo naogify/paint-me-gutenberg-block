@@ -13,28 +13,36 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
- 
+
 /**
  * Enqueue block JavaScript and CSS for the editor
  */
 function guty2_plugin_editor_scripts() {
- 
+
     // Enqueue block editor JS
     wp_enqueue_script(
-        'guty2/editor-scripts',
+        'guty2-editor-scripts',
         plugins_url( '/assets/dist/build.js', __FILE__ ),
         [ 'wp-blocks', 'wp-element', 'wp-editor', 'wp-components', 'wp-i18n' ],
-        filemtime( plugin_dir_path( __FILE__ ) . 'blocks/custom-block/index.js' ) 
+        filemtime( plugin_dir_path( __FILE__ ) . '/assets/dist/build.js' )
     );
- 
+
     // Enqueue block editor styles
-    // wp_enqueue_style(
-    //     'my-block-editor-css',
-    //     plugins_url( '/blocks/custom-block/editor-styles.css', __FILE__ ),
-    //     [ 'wp-blocks' ],
-    //     filemtime( plugin_dir_path( __FILE__ ) . 'blocks/custom-block/editor-styles.css' ) 
-    // );
- 
+     wp_enqueue_style(
+         'guty2-css',
+         plugins_url( '/assets/dist/style.css', __FILE__ ),
+         [ 'wp-blocks' ],
+         filemtime( plugin_dir_path( __FILE__ ) . '/assets/dist/style.css' )
+     );
+
+	register_block_type(
+		'guty2/paint-me', array(
+			'style'           => 'guty2-css',
+			'editor_style'    => 'guty2-css',
+			'editor_script'   => 'guty2-editor-scripts',
+		)
+	);
+
 }
 
 // Hook the enqueue functions into the editor
